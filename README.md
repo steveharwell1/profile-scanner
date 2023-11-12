@@ -1,5 +1,9 @@
 # profile-scanner
+**When you want to run an individual file run `python3 scanner/filename.py`**
 
+**When you want to run the command line tool run `python3 scanner`**
+
+You cannot be inside of the scanner folder with all of the `.py` files when you run the previous 2 commands.
 ### Listing of steps
 - [x] Create Github repository
 - [ ] Write `main.py` (Steve)
@@ -12,7 +16,7 @@
 - [ ] Write `searchreader.py` (Tapiwa) [selenium instructions](https://github.com/11bender/alumni-scraping/blob/main/alumni_scraping.ipynb)
 - [ ] Write `sql.py` (Janak)
 - [ ] Write `settings.py`
-- [ ] Write `__init__.py`
+- [x] Write `__init__.py`
 - [ ] Create requirements.txt
 - [ ] Integrate VPN into the system
 - [ ] Write installation instructions
@@ -96,7 +100,7 @@ class Crawler:
 
 def main() -> none:
     # imports resources
-    crawler = new Crawler(...)
+    crawler = Crawler(...)
     crawler.scanprofiles()
 
 if __name__ == '__main__':
@@ -185,7 +189,7 @@ if __name__ == '__main__':
     main()
 ```
 
-### types.py
+### crawlertypes.py
 ```python
 from dataclasses import dataclass, asdict
 from enum import Enum
@@ -222,7 +226,7 @@ find_most_recent_profile = """
 #### Observation
 - ObservationKey (int)
 - ProfileKey(FK)
-- Action: Enum('noAction', 'updated', 'error', 'newProfile')
+- Action: Enum('noAction', 'updated', 'error', 'newProfile', 'newBlankProfile')
 - ScanSummary(FK)
 #### Profile
 - ProfileKey (int)
