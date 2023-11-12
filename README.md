@@ -6,8 +6,8 @@
 You cannot be inside of the scanner folder with all of the `.py` files when you run the previous 2 commands.
 ### Listing of steps
 - [x] Create Github repository
-- [ ] Write `main.py` (Steve)
-- [ ] Write `types.py`
+- [ ] Write `__main__.py` (Steve)
+- [x] Write `crawlertypes.py`
 - [ ] Write `crawler.py`
 - [ ] Create db schema
 - [ ] Write `storage.py` (Janak) [sqlite](https://docs.python.org/3/library/sqlite3.html)
