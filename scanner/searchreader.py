@@ -2,15 +2,15 @@ from pagereader import PageReader
 from crawlertypes import PageScanResult, PageScanResultStatus
 
 class SearchReader(PageReader):
-    def scan(self, page, xmlparser) -> PageScanResult:
-        self._page_setup(page)
-        ids = self._get_more_ids(page, xmlparser) or []
+    def scan(self, browser, **kwargs) -> PageScanResult:
+        self._page_setup(browser, **kwargs)
+        ids = self._get_more_ids(browser) or []
         return PageScanResult(PageScanResultStatus.OK, ids, None)
 
-    def _page_setup(self, page) -> None:
+    def _page_setup(self, browser) -> None:
         pass
 
-    def _get_more_ids(self, page, xmlparser) -> list[str]:
+    def _get_more_ids(self, page) -> list[str]:
         pass
 
 

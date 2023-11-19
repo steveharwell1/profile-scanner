@@ -5,6 +5,7 @@ from typing import Optional
 class PageScanResultStatus(Enum):
     OK = "OK"
     ERR = "ERR"
+    SETUP = "SETUP"
 
 @dataclass
 class Profile:
