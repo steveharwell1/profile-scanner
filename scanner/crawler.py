@@ -1,9 +1,8 @@
 import time
 class Crawler:
-    def __init__(self, settings, browser, xmlparser, storage, pageReader):
+    def __init__(self, settings, browser, storage, pageReader):
         self.settings = settings
         self.browser = browser
-        self.xmlparser = xmlparser
         self.storage = storage
         self.pageReader = pageReader
 
@@ -16,15 +15,14 @@ class Crawler:
             if result.status == "ok":
                 self.process_ok_result(result)
 
-    def fromSearch(self, search_text):
-        url = "linkedinsearchurl"
-        page = self.browser.get(url)
-        result = self.searchReader(page, self.xmlparser, search_text)
+    def single_scan(self, reader, **kwargs):
+        result = reader.scan(self.browser, **kwargs)
         if result.status == "ok":
             self.process_ok_result(result)
 
     def process_ok_result(self, result):
-        self.storage.save_profile(result.profile)
+        if result.profile is not None:
+            self.storage.save_profile(result.profile)
         for id in result.ids:
             self.storage.save_blank_profile_if_unknown(id)
 

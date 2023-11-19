@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
 class PageReader(ABC):
     @abstractmethod
-    def scan(self, page, xmlparser):
+    def scan(self, browser, xmlparser):
         pass

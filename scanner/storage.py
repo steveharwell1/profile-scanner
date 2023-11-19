@@ -3,7 +3,7 @@ from crawlertypes import Profile
 
 import sql
 
-class storage:
+class Storage:
     def __init__(self, conn):
         """
             Save the connection resource in an instance var
