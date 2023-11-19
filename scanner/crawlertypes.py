@@ -9,6 +9,7 @@ class PageScanResultStatus(Enum):
 
 @dataclass
 class Profile:
+    # Profile(id="", fullname="", location="")
     id: str
     fullname: Optional[str] = None
     location: Optional[str] = None #should this be it's own datatype?

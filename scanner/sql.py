@@ -1,4 +1,4 @@
 create_tables = """CREATE TABLE IF NOT EXISTS..."""
-find_most_recent_profile = """
-   SELECT * FROM profiles where id = ? and enddate=null
+find_most_recent_profiles = """
+   SELECT * FROM profiles where enddate is NULL
    """

@@ -3,6 +3,7 @@ from crawlertypes import PageScanResult, PageScanResultStatus
 
 class SearchReader(PageReader):
     def scan(self, browser, **kwargs) -> PageScanResult:
+        search_text = kwargs['search']
         self._page_setup(browser, **kwargs)
         ids = self._get_more_ids(browser) or []
         return PageScanResult(PageScanResultStatus.OK, ids, None)
