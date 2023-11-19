@@ -1,5 +1,6 @@
 # Imports like sql.py and types.py
 from crawlertypes import Profile
+import sql
 
 import sql
 
@@ -8,7 +9,7 @@ class Storage:
         """
             Save the connection resource in an instance var
         """
-        pass
+        self.conn = conn
 
     def save_profile(self, profile:Profile) -> None:
         """
@@ -16,7 +17,13 @@ class Storage:
         If any data has changed the old profile will have an end date added,
         and a new profile record will be made
         """
-        pass
+        # Check db for profile
+
+        # If profile in db is same as current then do nothing
+
+        # Else add end date to old profile and create new profile in db
+        self.conn.execute(sql.update_profile, profile.id, profile.fullname, profile.location)
+        
 
     def save_blank_profile_if_unknown(self, id:str) -> None:
         """
@@ -31,7 +38,9 @@ class Storage:
 
     def get_profiles_to_update(self) -> Profile:
         """should be a generator function"""
-        pass
+        # DB query
+        for id in ids:
+            yield id
 
     def to_csv(self, id=None, filename="") -> None:
         """
