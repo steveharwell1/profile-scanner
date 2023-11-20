@@ -15,7 +15,8 @@ class LoginReader(PageReader):
         elementID.send_keys(kwargs['password'])
         elementID.submit()
         logger.info(f'Waiting for {kwargs["wait"]} seconds')
-        time.sleep(kwargs['wait'])
+        while('feed' not in browser.current_url):
+            time.sleep(1)
         return PageScanResult(PageScanResultStatus.SETUP, [], None)
     
 def main(scantype = "automatic", **kwargs) -> None:
