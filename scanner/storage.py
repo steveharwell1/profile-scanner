@@ -39,8 +39,7 @@ class Storage:
     def get_profiles_to_update(self) -> Profile:
         """should be a generator function"""
         # DB query
-        for id in ids:
-            yield id
+        yield "https://www.linkedin.com/in/jim-brown-93478012/"
 
     def to_csv(self, id=None, filename="") -> None:
         """

@@ -1,15 +1,33 @@
 from pagereader import PageReader
 from crawlertypes import PageScanResult, PageScanResultStatus, Profile
+import time
+import logging
+logger = logging.getLogger("scanner")
+from selenium.webdriver.common.by import By
 
 class ProfileReader(PageReader):
     def scan(self, browser, **kwargs) -> PageScanResult:
-        pass
+        logger.info('Navigating to login page.')
+        
+        #Setup Page
+        #If is alumni, get profile info
+        if self._is_alum (browser):
+            logger.info ("This user is an alum")
+        else:
+            logger.info ("This user is no an alum")
+            
+            
+        time.sleep(20)
+        
+        #For each extra ID, add it to a list
+        
+        return PageScanResult(PageScanResultStatus.OK, [], None)
 
     def _page_setup(self, page) -> None:
         pass
 
     def _is_alum(self, page) -> bool:
-        pass
+        return False
 
     def _is_correct_page_type(self, page) -> bool:
         pass

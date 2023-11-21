@@ -11,7 +11,7 @@ class Crawler:
             time.sleep(self.settings.sleep_seconds)
             # todo Get page from id
             page = self.browser.get(id)
-            result = self.pageReader(page, self.xmlparser)
+            result = self.pageReader.scan(page)
             if result.status == "ok":
                 self.process_ok_result(result)
 
