@@ -2,6 +2,7 @@ from pagereader import PageReader
 from crawlertypes import PageScanResult, PageScanResultStatus, Profile
 import time
 import logging
+from urllib.parse import urlparse
 logger = logging.getLogger("scanner")
 from selenium.webdriver.common.by import By
 
@@ -12,43 +13,43 @@ class ProfileReader(PageReader):
         #Setup Page
         #If is alumni, get profile info
         if self._is_alum (browser):
-            logger.info ("This user is an alum")
+            name = self._get_name(browser)
+            logger.info(f'The user name is {name}')
+            location = self._get_location(browser)
+            logger.info(f'{name}\'s location is {location}')
+            ids = self._get_more_ids(browser, browser.current_url)
+            logger.info(ids)
+            result = PageScanResult(PageScanResultStatus.OK, ids, Profile(id=browser.current_url, fullname=name, location=location))
+            return result
         else:
             logger.info ("This user is not an alum")
-            
-            
-        time.sleep(20)
-        
-        #For each extra ID, add it to a list
-        
-        return PageScanResult(PageScanResultStatus.OK, [], None)
+            return PageScanResult(PageScanResultStatus.OK, [], None)
 
     def _page_setup(self, page) -> None:
         pass
 
     def _is_alum(self,browser) -> bool:
-        is_good = True
         try:
             has_tamuc_link = browser.find_element(By.CSS_SELECTOR, '.scaffold-layout__main a[href*="https://www.linkedin.com/company/36631/"]')
+            return has_tamuc_link is not None
         except:
-            is_good = False
-        return is_good
-    
-    def _is_correct_page_type(self, page) -> bool:
-        pass
+            return False
 
-    def _get_name(self, page) -> str:
-        pass
+    def _get_name(self, browser) -> str:
+        elem = browser.find_element(By.CSS_SELECTOR, 'h1')
+        return elem.text
 
-    def _get_location(self, page) -> str:
-        pass
+
+    def _get_location(self, browser) -> str:
+        elem = browser.find_element(By.CSS_SELECTOR, '.pv-text-details__right-panel + div > span:first-of-type')
+        return elem.text
 
     def _get_connections(self, page) -> int:
         pass
 
-    def _get_more_ids(self, page) -> list[str]:
-        pass
-
+    def _get_more_ids(self, browser, current_url) -> list[str]:
+        elems = browser.find_elements(By.CSS_SELECTOR, f'a[href^="https://www.linkedin.com/in/"]')
+        return list(set([ urlparse(elem.get_attribute("href")).hostname + urlparse(elem.get_attribute("href")).path for elem in elems if current_url not in elem.get_attribute("href")]))
 
 def main() -> None:
     print("Hello from profilereader.py")

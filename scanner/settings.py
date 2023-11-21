@@ -1,4 +1,4 @@
 sleep_seconds = 8
-wait_after_login = 60
+page_load_time = 2
 log_level = "INFO"
 db_name = "profiles.db"

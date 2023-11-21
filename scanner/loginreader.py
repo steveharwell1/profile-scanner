@@ -14,7 +14,7 @@ class LoginReader(PageReader):
         elementID = browser.find_element(By.ID, 'password')
         elementID.send_keys(kwargs['password'])
         elementID.submit()
-        logger.info(f'Waiting for {kwargs["wait"]} seconds')
+        logger.info(f'Waiting for user to perform MFA')
         while('feed' not in browser.current_url):
             time.sleep(1)
         return PageScanResult(PageScanResultStatus.SETUP, [], None)

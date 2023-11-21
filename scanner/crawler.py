@@ -14,8 +14,9 @@ class Crawler:
             # todo Get page from id
             logger.info (f"Searching for user {id}")
             self.browser.get(id)
+            time.sleep(self.settings.page_load_time)
             result = self.pageReader.scan(self.browser)
-            if result.status == "ok":
+            if result.status == "OK":
                 self.process_ok_result(result)
 
     def single_scan(self, reader, **kwargs):
