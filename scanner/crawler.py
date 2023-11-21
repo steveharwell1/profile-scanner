@@ -1,4 +1,6 @@
 import time
+import logging
+logger = logging.getLogger("scanner")
 class Crawler:
     def __init__(self, settings, browser, storage, pageReader):
         self.settings = settings
@@ -10,8 +12,9 @@ class Crawler:
         for id in self.storage.get_profiles_to_update():
             time.sleep(self.settings.sleep_seconds)
             # todo Get page from id
-            page = self.browser.get(id)
-            result = self.pageReader.scan(page)
+            logger.info (f"Searching for user {id}")
+            self.browser.get(id)
+            result = self.pageReader.scan(self.browser)
             if result.status == "ok":
                 self.process_ok_result(result)
 

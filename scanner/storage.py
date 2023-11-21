@@ -40,6 +40,8 @@ class Storage:
         """should be a generator function"""
         # DB query
         yield "https://www.linkedin.com/in/jim-brown-93478012/"
+        yield "https://www.linkedin.com/in/steve-harwell/"
+        yield "https://www.linkedin.com/in/roshan-d-988232144/"
 
     def to_csv(self, id=None, filename="") -> None:
         """
