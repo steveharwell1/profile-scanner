@@ -66,7 +66,7 @@ def do_scrape(scantype="automatic", **kwargs):
         conn = sqlite3.connect(settings.db_name)
         store = Storage(conn)
         crawler = Crawler(settings, browser, store, ProfileReader())
-        crawler.single_scan(LoginReader(), username=secrets.username, password=secrets.password, wait=settings.wait_after_login)
+        crawler.single_scan(LoginReader(), username=secrets.username, password=secrets.password)
         if scantype == "search":
             crawler.single_scan(SearchReader(), **kwargs)
         crawler.scanprofiles()
