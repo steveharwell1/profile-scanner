@@ -2,8 +2,8 @@ from pagereader import PageReader
 from crawlertypes import PageScanResult, PageScanResultStatus, Profile
 import time
 import logging
-from urllib.parse import urlparse
 logger = logging.getLogger("scanner")
+from urllib.parse import urlparse
 from selenium.webdriver.common.by import By
 
 class ProfileReader(PageReader):
