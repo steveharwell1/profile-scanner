@@ -53,12 +53,12 @@ def create_tables():
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS Profile (
             ProfileKey INTEGER PRIMARY KEY,
+            StartDate TEXT,
+            EndDate TEXT,
             LinkedInId TEXT,
             IsAlum INTEGER,
             FullName TEXT,
-            LocationKey INTEGER,
-            Connections INTEGER,
-            FOREIGN KEY (LocationKey) REFERENCES Location(LocationKey)
+            Location TEXT
         );
     ''')
 
