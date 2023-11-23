@@ -1,18 +1,18 @@
 import sqlite3
 import os
 
-def create_tables():
+def create_tables(connection):
     # Get the script's directory
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    db_path = os.path.join(script_dir, 'profiles.db')
+    # script_dir = os.path.dirname(os.path.abspath(__file__))
+    # db_path = os.path.join(script_dir, 'profiles.db')
 
-    connection = sqlite3.connect(db_path)
+    # connection = sqlite3.connect(db_path)
     cursor = connection.cursor()
 
     # Create Location Table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS Location (
-            LocationKey INTEGER PRIMARY KEY,
+            LocationKey INTEGER PRIMARY KEY AUTOINCREMENT,
             City TEXT,
             State TEXT
         );
@@ -21,7 +21,7 @@ def create_tables():
     # Create EventDate Table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS EventDate (
-            DateKey INTEGER PRIMARY KEY,
+            DateKey INTEGER PRIMARY KEY AUTOINCREMENT,
             Date INTEGER,
             Year INTEGER,
             Month INTEGER,
@@ -39,7 +39,7 @@ def create_tables():
     # Create ScanSummary Table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS ScanSummary (
-            ScanKey INTEGER PRIMARY KEY,
+            ScanKey INTEGER PRIMARY KEY AUTOINCREMENT,
             DateKey INTEGER,
             EventLoadStatus INTEGER,
             RunMilliseconds INTEGER,
@@ -52,7 +52,7 @@ def create_tables():
     # Create Profile Table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS Profile (
-            ProfileKey INTEGER PRIMARY KEY,
+            ProfileKey INTEGER PRIMARY KEY AUTOINCREMENT,
             StartDate TEXT,
             EndDate TEXT,
             LinkedInId TEXT,
@@ -65,7 +65,8 @@ def create_tables():
     # Create Observation Table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS Observation (
-            ObservationKey INTEGER PRIMARY KEY,
+            ObservationKey INTEGER PRIMARY KEY AUTOINCREMENT,
+            observationdate TEXT,
             ProfileKey INTEGER,
             Action TEXT CHECK (Action IN ('noAction', 'updated', 'error', 'newProfile', 'newBlankProfile')),
             ScanKey INTEGER,
@@ -74,9 +75,8 @@ def create_tables():
         );
     ''')
 
-    # Commit and close
+    # Commit
     connection.commit()
-    connection.close()
 
 if __name__ == '__main__':
     create_tables()
