@@ -26,11 +26,11 @@ class Storage:
         query = cursor.execute('select * from Profile where enddate is null and linkedinID=?', (profile.id,))  
         result = query.fetchone()
         if result is None:
-            logger.info("Profile not found in db. Saving new profile.")
+            logger.info(f"{profile.id} not found in db. Saving new profile.")
             self._insert_profile(cursor, profile)
             self._record_observation(cursor, cursor.lastrowid, "newProfile")
-        elif result[4] != 1 or result[3] != profile.id or result[5] != profile.fullname or result[6] != profile.location:
-            logger.info("Profile does not match db. Saving new profile.")
+        elif result[4] != profile.is_alum or result[3] != profile.id or result[5] != profile.fullname or result[6] != profile.location or result[7] != profile.connections:
+            logger.info(f"{profile.id} does not match db. Saving new profile.")
             cursor.execute("""
                 UPDATE profile SET enddate=date('now') WHERE ProfileKey=?
                 """,
@@ -52,10 +52,10 @@ class Storage:
 
     def _insert_profile(self, cursor, profile):
         cursor.execute("""
-                insert into Profile(StartDate, EndDate, Linkedinid, isalum, fullname, location)
-                values(date(\'now\'), Null, ?, ?, ?, ?)
+                insert into Profile(StartDate, EndDate, Linkedinid, isalum, fullname, location, connections)
+                values(date('now'), Null, ?, ?, ?, ?, ?)
                 """,
-                (profile.id, True, profile.fullname, profile.location))
+                (profile.id, profile.is_alum, profile.fullname, profile.location, profile.connections))
         self.conn.commit()
 
     def save_blank_profile_if_unknown(self, id:str) -> None:
@@ -67,10 +67,10 @@ class Storage:
         query = cursor.execute('select * from Profile where enddate is null and linkedinID=?', (id,))  
         result = query.fetchone()
         if result is None:
-            logger.info("Profile not found in db. Saving new profile.")
+            logger.info(f"{id} not found in db. Saving new profile.")
             cursor.execute("""
-                insert into Profile(StartDate, EndDate, Linkedinid, isalum, fullname, location)
-                values(date(\'now\'), Null, ?, Null, Null, Null)
+                insert into Profile(StartDate, Linkedinid)
+                values(date('now'), ?)
                 """,
                 (id, ))
             self.conn.commit()
@@ -84,12 +84,15 @@ class Storage:
     def get_profiles_to_update(self) -> Profile:
         """should be a generator function"""
         # DB query
-        # yield "https://www.linkedin.com/in/jim-brown-93478012/"
-        # yield "https://www.linkedin.com/in/steve-harwell/"
-        yield "https://www.linkedin.com/in/roshan-d-988232144/"
         # order profiles by observation
         # oldest observation will be the next profile
         cursor=self.conn.cursor()
+        while (True):
+            yield from self._get_stale_alumni(cursor)
+            yield from self._get_stale_non_alumni(cursor)
+            yield from self._get_new_profiles(cursor)
+
+    def _get_stale_alumni(self, cursor):
         while (True):
             query = cursor.execute("""
                                 select p.LinkedInId, MAX(o.observationdate) as odate
@@ -97,16 +100,51 @@ class Storage:
                                 inner join Observation as o
                                 on p.ProfileKey = o.ProfileKey
                                 GROUP BY p.LinkedInId
-                                HAVING odate < DATE('now', '-1 month')
+                                HAVING MAX(p.isalum) = 1 AND odate < DATE('now', '-1 month')
                                 ORDER BY odate
                                 """)  
             result = query.fetchone()
             if result is not None:
                 yield result[0] 
             else: break
-            
-        # After all old profiles are scanned.
-        # Profiles with no observation will be scanned
+
+    def _get_stale_non_alumni(self, cursor):
+        count = 20
+        while (count > 0):
+            count = count - 1
+            query = cursor.execute("""
+                                select p.LinkedInId, MAX(o.observationdate) as odate
+                                from Profile as p
+                                inner join Observation as o
+                                on p.ProfileKey = o.ProfileKey
+                                GROUP BY p.LinkedInId
+                                HAVING MAX(p.isalum) = 0 AND odate < DATE('now', '-3 month')
+                                ORDER BY odate
+                                """)  
+            result = query.fetchone()
+            if result is not None:
+                yield result[0] 
+            else: break
+
+    def _get_new_profiles(self, cursor):
+        count = 20
+        while (count > 0):
+            count = count - 1
+            query = cursor.execute("""
+                                SELECT p.LinkedInId, MAX(o.observationkey)
+                                FROM Profile AS p
+                                LEFT JOIN Observation AS o
+                                ON p.ProfileKey = o.ProfileKey
+                                GROUP BY p.linkedinid
+                                HAVING MAX(o.observationkey) IS NULL
+                                ORDER BY p.startdate
+                                """)
+            result = query.fetchone()
+            if result is not None:
+                yield result[0] 
+            else:
+                logger.warning('Blank profiles exhausted. This should probably never happen.')
+                time.sleep(2)
 
     def to_csv(self, id=None, filename="") -> None:
         """

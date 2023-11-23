@@ -13,6 +13,7 @@ class Profile:
     id: str
     fullname: Optional[str] = None
     location: Optional[str] = None #should this be it's own datatype?
+    is_alum: Optional[bool] = None
     connections: Optional[str] = None # Not sure if int is appr. I see some listings like ">900"
 
 @dataclass
