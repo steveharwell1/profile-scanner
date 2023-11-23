@@ -6,18 +6,18 @@
 You cannot be inside of the scanner folder with all of the `.py` files when you run the previous 2 commands.
 ### Listing of steps
 - [x] Create Github repository
-- [ ] Write `__main__.py` (Steve)
+- [x] Write `__main__.py` (Steve)
 - [x] Write `crawlertypes.py`
-- [ ] Write `crawler.py`
+- [x] Write `crawler.py`
 - [ ] Create db schema
 - [ ] Write `storage.py` (Janak) [sqlite](https://docs.python.org/3/library/sqlite3.html)
-- [ ] Write `pagereader.py`
-- [ ] Write `profilereader.py` (Roshan) [selenium instructions](https://github.com/11bender/alumni-scraping/blob/main/alumni_scraping.ipynb)
-- [ ] Write `searchreader.py` (Tapiwa) [selenium instructions](https://github.com/11bender/alumni-scraping/blob/main/alumni_scraping.ipynb)
+- [x] Write `pagereader.py`
+- [x] Write `profilereader.py` (Roshan) [selenium instructions](https://github.com/11bender/alumni-scraping/blob/main/alumni_scraping.ipynb)
+- [x] Write `searchreader.py` (Tapiwa) [selenium instructions](https://github.com/11bender/alumni-scraping/blob/main/alumni_scraping.ipynb)
 - [ ] Write `sql.py` (Janak)
-- [ ] Write `settings.py`
+- [x] Write `settings.py`
 - [x] Write `__init__.py`
-- [ ] Create requirements.txt
+- [x] Create requirements.txt
 - [ ] Integrate VPN into the system
 - [ ] Write installation instructions
 - [ ] Write usage instructions
