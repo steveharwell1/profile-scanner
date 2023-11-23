@@ -11,14 +11,27 @@ class Storage:
             Save the connection resource in an instance var
         """
         self.conn = conn
-
+        sql.create_tables()
+        'select * from Profile where enddate is null' 
+        
+        
+        
     def save_profile(self, profile:Profile) -> None:
         """
         Will create an observation.
         If any data has changed the old profile will have an end date added,
         and a new profile record will be made
         """
+        cursor=self.conn.cursor()
+        query = cursor.execute('select * from Profile where enddate is null and linkedinID=?', profile.id)  
+        result = query.fetchone()
+        if result is None:
+            cursor.execute('insert into Profile values(date(\'now\'),Null,?,?,?,?)',
+                           profile.id, True, profile.fullname, None, None)
+            
         # Check db for profile
+        
+        
 
         # If profile in db is same as current then do nothing
 
