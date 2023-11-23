@@ -58,7 +58,8 @@ def create_tables(connection):
             LinkedInId TEXT,
             IsAlum INTEGER,
             FullName TEXT,
-            Location TEXT
+            Location TEXT,
+            connections TEXT
         );
     ''')
 

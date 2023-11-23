@@ -20,11 +20,6 @@ class SearchReader(PageReader):
         logger.info(ids)
         return PageScanResult(PageScanResultStatus.OK, ids, None)
 
-    def _get_more_ids(self, browser, current_url) -> list[str]:
-        elems = browser.find_elements(By.CSS_SELECTOR, f'a[href^="https://www.linkedin.com/in/"]')
-        return list(set([ urlparse(elem.get_attribute("href")).hostname + urlparse(elem.get_attribute("href")).path for elem in elems if current_url not in elem.get_attribute("href")]))
-
-
 
 def main() -> None:
     print("Hello from searchreader.py")
