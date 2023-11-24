@@ -10,6 +10,8 @@ batch_size_for_reviewing_new_profiles = 20
 
 # browserhelper.py
 buffer_seconds_after_page_get = 1
+max_time_for_load = 10
+sleep_after_js_load = 0.5
 
 # crawler.py
 sleep_between_profiles = 8
@@ -20,6 +22,9 @@ login_url = "https://www.linkedin.com/login/"
 login_username_input_id = 'username'
 login_password_input_id = 'password'
 post_login_landing_url_snippet = 'feed'
+
+# pagereader.py
+profile_id_selector = 'a[href^="https://www.linkedin.com/in/"]:not([href^="https://www.linkedin.com/in/AC"])'
 
 # profilereader.py
 wait_for_element_on_profile_page = 'h1'

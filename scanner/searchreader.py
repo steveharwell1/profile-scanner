@@ -2,8 +2,8 @@ import time
 
 from crawlertypes import PageScanResult, PageScanResultStatus
 from pagereader import PageReader
+import browserhelper
 
-from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
 import logging
@@ -13,7 +13,7 @@ class SearchReader(PageReader):
     def scan(self, browser, **kwargs) -> PageScanResult:
         time.sleep(2)
         search_text = kwargs['text']
-        elementID = browser.find_element(By.CSS_SELECTOR, self.settings.selector_for_search_input)
+        elementID = browserhelper.safe_find_element_by_css(browser, self.settings.selector_for_search_input)
         elementID.send_keys(search_text)
         time.sleep(1)
         elementID.send_keys(Keys.RETURN)
