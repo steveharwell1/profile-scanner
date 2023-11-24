@@ -17,7 +17,8 @@ class SearchReader(PageReader):
         elementID.send_keys(Keys.RETURN)
         time.sleep(3)
         ids = self._get_more_ids(browser, browser.current_url)
-        logger.info(ids)
+        for id in ids:
+            logger.info(f'{id} found when searching "{search_text}"')
         return PageScanResult(PageScanResultStatus.OK, ids, None)
 
 

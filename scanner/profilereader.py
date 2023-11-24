@@ -11,7 +11,7 @@ from selenium.webdriver.support import expected_conditions as EC
 class ProfileReader(PageReader):
     def scan(self, browser, **kwargs) -> PageScanResult:
         id = kwargs['id']
-        logger.info(f'Navigating to profile page. {id}')
+        logger.info(f'{id} Navigating to profile page')
         #Setup Page
         #If is alumni, get profile info
         ids = []
@@ -29,13 +29,13 @@ class ProfileReader(PageReader):
                 )
                 time.sleep(0.5)
             except:
-                logger.error(f'Waited too long for page {id}')
+                logger.error(f'{id} Waited too long for page')
             name = self._get_name(browser)
-            logger.info(f'The user name is {name}')
+            logger.info(f'{id} The user name is {name}')
             location = self._get_location(browser)
-            logger.info(f'{name}\'s location is {location}')
+            logger.info(f'{id} {name}\'s location is {location}')
             connections = self._get_connections(browser)
-            logger.info(f'{name}\'s connections are {connections}')
+            logger.info(f'{id} {name}\'s connections are {connections}')
             ids = self._get_more_ids(browser, id)
             profile = Profile(id=id, fullname=name, location=location, is_alum=True, connections=connections)
         else:
@@ -58,7 +58,7 @@ class ProfileReader(PageReader):
                 )
             )
         except:
-            logger.error(f'Waited too long for page {details_page}')
+            logger.error(f'{details_page} Waited too long for page')
         tamuc_link = browserhelper.safe_find_element(browser, By.CSS_SELECTOR, '.scaffold-layout__main a[href*="https://www.linkedin.com/company/36631/"]')
         return tamuc_link is not None
 

@@ -2,52 +2,7 @@ import sqlite3
 import os
 
 def create_tables(connection):
-    # Get the script's directory
-    # script_dir = os.path.dirname(os.path.abspath(__file__))
-    # db_path = os.path.join(script_dir, 'profiles.db')
-
-    # connection = sqlite3.connect(db_path)
     cursor = connection.cursor()
-
-    # Create Location Table
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS Location (
-            LocationKey INTEGER PRIMARY KEY AUTOINCREMENT,
-            City TEXT,
-            State TEXT
-        );
-    ''')
-
-    # Create EventDate Table
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS EventDate (
-            DateKey INTEGER PRIMARY KEY AUTOINCREMENT,
-            Date INTEGER,
-            Year INTEGER,
-            Month INTEGER,
-            YearDay INTEGER,
-            Day INTEGER,
-            Quarter INTEGER,
-            Week INTEGER,
-            FYYear INTEGER,
-            FYYearDay INTEGER,
-            FYQuarter INTEGER,
-            FYWeek INTEGER
-        );
-    ''')
-
-    # Create ScanSummary Table
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS ScanSummary (
-            ScanKey INTEGER PRIMARY KEY AUTOINCREMENT,
-            DateKey INTEGER,
-            EventLoadStatus INTEGER,
-            RunMilliseconds INTEGER,
-            HttpErrorCount INTEGER,
-            Status TEXT CHECK (Status IN ('ok', 'error')),
-            FOREIGN KEY (DateKey) REFERENCES EventDate(DateKey)
-        );
-    ''')
 
     # Create Profile Table
     cursor.execute('''
@@ -70,14 +25,61 @@ def create_tables(connection):
             observationdate TEXT,
             ProfileKey INTEGER,
             Action TEXT CHECK (Action IN ('noAction', 'updated', 'error', 'newProfile', 'newBlankProfile')),
-            ScanKey INTEGER,
-            FOREIGN KEY (ProfileKey) REFERENCES Profile(ProfileKey),
-            FOREIGN KEY (ScanKey) REFERENCES ScanSummary(ScanKey)
+            FOREIGN KEY (ProfileKey) REFERENCES Profile(ProfileKey)
         );
     ''')
 
     # Commit
     connection.commit()
 
+select_most_recent_profile_by_id = """
+        select * from Profile where enddate is null and linkedinID=?
+        """
+
+select_alumni_profiles_not_recently_updated = """
+        select p.LinkedInId, MAX(o.observationdate) as odate
+        from Profile as p
+        inner join Observation as o
+        on p.ProfileKey = o.ProfileKey
+        GROUP BY p.LinkedInId
+        HAVING MAX(p.isalum) = 1 AND odate < DATE('now', '-' || ? || ' month')
+        ORDER BY odate
+        """
+
+select_non_alumni_profiles_not_recently_updated = """
+        select p.LinkedInId, MAX(o.observationdate) as odate
+        from Profile as p
+        inner join Observation as o
+        on p.ProfileKey = o.ProfileKey
+        GROUP BY p.LinkedInId
+        HAVING MAX(p.isalum) = 0 AND odate < DATE('now', '-' || ? || ' month')
+        ORDER BY odate
+        """
+
+select_blank_profiles = """
+        SELECT p.LinkedInId, MAX(o.observationkey)
+        FROM Profile AS p
+        LEFT JOIN Observation AS o
+        ON p.ProfileKey = o.ProfileKey
+        GROUP BY p.linkedinid
+        HAVING MAX(o.observationkey) IS NULL
+        ORDER BY p.startdate
+        """
+
+add_end_date_to_stale_profile_by_id = """
+        UPDATE profile SET enddate=date('now') WHERE ProfileKey=?
+        """
+insert_new_observation = """
+        insert into Observation(observationdate, ProfileKey, Action)
+        values(DATE('now'), ?, ?)
+        """
+insert_new_profile = """
+        insert into Profile(StartDate, EndDate, Linkedinid, isalum, fullname, location, connections)
+        values(date('now'), Null, ?, ?, ?, ?, ?)
+        """
+insert_stub_profile_by_id = """
+        insert into Profile(StartDate, Linkedinid)
+        values(date('now'), ?)
+        """
 if __name__ == '__main__':
     create_tables()

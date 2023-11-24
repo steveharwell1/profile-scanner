@@ -64,7 +64,7 @@ def do_scrape(scantype="automatic", **kwargs):
         logger.info('Starting browser (Chrome) and database ({settings.db.name})')
         browser = webdriver.Chrome()
         conn = sqlite3.connect(settings.db_name)
-        store = Storage(conn)
+        store = Storage(conn, settings)
         crawler = Crawler(settings, browser, store, ProfileReader())
         crawler.single_scan(LoginReader(), username=secrets.username, password=secrets.password)
         if scantype == "search":
