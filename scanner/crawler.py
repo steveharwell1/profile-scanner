@@ -1,11 +1,10 @@
 import time
-import logging
-from crawlertypes import PageScanResultStatus
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
+from crawlertypes import PageScanResultStatus
+
+import logging
 logger = logging.getLogger("scanner")
+
 class Crawler:
     def __init__(self, settings, browser, storage, pageReader):
         self.settings = settings
@@ -15,9 +14,8 @@ class Crawler:
 
     def scanprofiles(self):
         for id in self.storage.get_profiles_to_update():
-            time.sleep(self.settings.anti_spam_sleep_seconds)
+            time.sleep(self.settings.sleep_between_profiles)
             logger.info (f"{id} scan started")
-            time.sleep(self.settings.page_load_time)
             result = self.pageReader.scan(self.browser, id=id)
             if result.status == PageScanResultStatus.OK:
                 logger.info(f'{id} scan was ok')
@@ -36,9 +34,3 @@ class Crawler:
             self.storage.save_profile(result.profile)
         for id in result.found_ids:
             self.storage.save_blank_profile_if_unknown(id)
-
-def main() -> None:
-    logger.info("Hello from crawler.py")
-
-if __name__ == '__main__':
-    main()

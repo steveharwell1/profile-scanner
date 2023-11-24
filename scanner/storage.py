@@ -1,7 +1,9 @@
 # Imports like sql.py and types.py
 import time
+
 from crawlertypes import Profile
 import sql
+
 import logging
 logger = logging.getLogger("scanner")
 
@@ -116,9 +118,3 @@ class Storage:
             If no id, export the most recent record for all profiles
         """
         pass
-
-
-def main() -> None:
-	print('Hello from storage.py')
-if __name__ == '__main__':
-    main()

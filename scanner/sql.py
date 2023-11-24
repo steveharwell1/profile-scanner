@@ -81,5 +81,4 @@ insert_stub_profile_by_id = """
         insert into Profile(StartDate, Linkedinid)
         values(date('now'), ?)
         """
-if __name__ == '__main__':
-    create_tables()
+

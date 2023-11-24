@@ -1,10 +1,15 @@
 from urllib.parse import urlparse
+
 from selenium.webdriver.common.by import By
 
 from abc import ABC, abstractmethod
 class PageReader(ABC):
+
+    def __init__(self, settings):
+        self.settings = settings
+
     @abstractmethod
-    def scan(self, browser, xmlparser):
+    def scan(self, browser):
         pass
 
     def _get_more_ids(self, browser, current_url) -> list[str]:
