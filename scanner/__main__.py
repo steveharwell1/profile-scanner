@@ -1,13 +1,14 @@
 import sqlite3
-from selenium import webdriver
 
 from crawler import Crawler
-from profilereader import ProfileReader
 from loginreader import LoginReader
-import secrets
+from profilereader import ProfileReader
 from searchreader import SearchReader
-import settings
 from storage import Storage
+import secrets
+import settings
+
+from selenium import webdriver
 
 import logging
 logger = logging.getLogger("scanner")
@@ -17,10 +18,9 @@ def main() -> None:
     Should only run from the command line
     Will read from the command line and start the scraper in the
     user selected mode.
-    """
-    # read command line controls implemented with [argparse]
-	  
     # https://docs.python.org/3/library/argparse.html
+    """
+
     import argparse
     from datetime import datetime
     parser = argparse.ArgumentParser()
@@ -64,11 +64,11 @@ def do_scrape(scantype="automatic", **kwargs):
         logger.info('Starting browser (Chrome) and database ({settings.db.name})')
         browser = webdriver.Chrome()
         conn = sqlite3.connect(settings.db_name)
-        store = Storage(conn)
-        crawler = Crawler(settings, browser, store, ProfileReader())
-        crawler.single_scan(LoginReader(), username=secrets.username, password=secrets.password)
+        store = Storage(conn, settings)
+        crawler = Crawler(settings, browser, store, ProfileReader(settings))
+        crawler.single_scan(LoginReader(settings), username=secrets.username, password=secrets.password)
         if scantype == "search":
-            crawler.single_scan(SearchReader(), **kwargs)
+            crawler.single_scan(SearchReader(settings), **kwargs)
         crawler.scanprofiles()
         complete = True
     finally:
