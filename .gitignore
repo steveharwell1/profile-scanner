@@ -161,4 +161,7 @@ cython_debug/
 
 
 secrets.py
+usersecrets.py
 *.db
+*.csv
+*.xlsx

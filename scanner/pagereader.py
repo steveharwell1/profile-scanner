@@ -5,8 +5,9 @@ from selenium.webdriver.common.by import By
 from abc import ABC, abstractmethod
 class PageReader(ABC):
 
-    def __init__(self, settings):
+    def __init__(self, settings, browserhelper):
         self.settings = settings
+        self.browserhelper = browserhelper
 
     @abstractmethod
     def scan(self, browser):

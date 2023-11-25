@@ -1,11 +1,12 @@
 import sqlite3
 
+from browserhelper import BrowserHelper
 from crawler import Crawler
 from loginreader import LoginReader
 from profilereader import ProfileReader
 from searchreader import SearchReader
 from storage import Storage
-import secrets
+import usersecrets as secrets
 import settings
 
 from selenium import webdriver
@@ -24,34 +25,30 @@ def main() -> None:
     import argparse
     from datetime import datetime
     parser = argparse.ArgumentParser()
-    parser.add_argument("-l", "--log_level", help="Choose the level of logging.", choices=["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"], default=settings.log_level)
     parser.add_argument("-a", "--automatic", help="Allow the scraper to manage itself.", action="store_true")
     parser.add_argument("-s", "--search", help="Start the scraper by searching for specific text.")
-    parser.add_argument("-i", "--ids", help="Load a csv of LinkedIn ids in the ids column. Scraper prioritizes blank profiles in automatic mode.")
-    parser.add_argument("-u", "--update_profile", help="Update one specific profile by id.")
-    parser.add_argument("-g", "--get_person", help="Get an individual person's timeline in a csv file.")
-    parser.add_argument("-c", "--get_current", help="Get the most current version of each person's profile in a csv file.")
-    parser.add_argument("-o", "--output", help="Filename for the output file.", default=f"{datetime.now().strftime('%Y-%m-%dT%H:%M:%S')}-output.csv")
+    parser.add_argument("-g", "--get_person", help="Get an individual person's timeline in an excel file.")
+    parser.add_argument("-c", "--get_current", help="Get the most current version of each person's profile in an excel file.", action="store_true")
+    parser.add_argument("-o", "--output", help="Filename for the output file.", default=f"{datetime.now().strftime('%Y-%m-%dT%H:%M:%S')}-output.xlsx")
     args = parser.parse_args()
     logger.addHandler(logging.StreamHandler())
-    logger.setLevel(args.log_level)
-    settings.log_level = args.log_level
-    logger.info(f'Logging level set to {args.log_level}')
+    logger.setLevel(settings.log_level)
+    logger.info(f'Logging level set to {settings.log_level}')
     if args.search:
         logger.info(f"Running in search mode with text ({args.search})")
         do_scrape(scantype="search", text=args.search)
-    elif args.ids:
-        logger.info(f'Running in load mode reading from file ({args.ids})')
-        add_names(args.ids)
-    elif args.update_profile:
-        logger.info(f'Updating profile by id ({args.update_profile})')
-        update_profile(args.update_profile)
     elif args.get_person:
         logger.info(f'Getting person with id ({args.get_person}) into file ({args.output})')
-        get_person(args.get_person, args.output)
+        conn = sqlite3.connect(settings.db_name)
+        store = Storage(conn, settings)
+        get_person(store, args.get_person, args.output)
+        conn.close()
     elif args.get_current:
         logger.info(f'Saving all current profiles info file ({args.output})')
-        get_profiles(args.output)
+        conn = sqlite3.connect(settings.db_name)
+        store = Storage(conn, settings)
+        get_profiles(store, args.output)
+        conn.close()
     else:
         logger.info("Running in automatic mode")
         do_scrape()
@@ -63,12 +60,13 @@ def do_scrape(scantype="automatic", **kwargs):
     try:
         logger.info('Starting browser (Chrome) and database ({settings.db.name})')
         browser = webdriver.Chrome()
+        browserhelper = BrowserHelper(browser)
         conn = sqlite3.connect(settings.db_name)
         store = Storage(conn, settings)
-        crawler = Crawler(settings, browser, store, ProfileReader(settings))
-        crawler.single_scan(LoginReader(settings), username=secrets.username, password=secrets.password)
+        crawler = Crawler(settings, browser, store, ProfileReader(settings, browserhelper))
+        crawler.single_scan(LoginReader(settings, browserhelper), username=secrets.username, password=secrets.password)
         if scantype == "search":
-            crawler.single_scan(SearchReader(settings), **kwargs)
+            crawler.single_scan(SearchReader(settings, browserhelper), **kwargs)
         crawler.scanprofiles()
         complete = True
     finally:
@@ -79,26 +77,11 @@ def do_scrape(scantype="automatic", **kwargs):
         if conn is not None:
             conn.close()
 
-def add_names(filename):
-    ## todo setup resources
-    # for id in ids:
-    #     storage.save_blank_profile_if_unknown(id)
-    pass
+def get_person(storage: Storage, id, filename):
+    storage.to_xlsx(id, filename)
 
-def update_profile(id):
-    ## todo setup resources
-    #crawler.scanprofile(id)
-    pass
-
-def get_person(id, filename):
-    ## todo setup resources
-    #storage.to_xlsx(id, filename)
-    pass
-
-def get_profiles(filename):
-    ## todo setup resources
-    #storage.to_xlsx(None, filename)
-    pass
+def get_profiles(storage: Storage, filename):
+    storage.to_xlsx(None, filename)
 
 if __name__ == '__main__':
     main()

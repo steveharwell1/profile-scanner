@@ -2,7 +2,6 @@ import time
 
 from crawlertypes import PageScanResult, PageScanResultStatus, Profile
 from pagereader import PageReader
-import browserhelper
 
 import logging
 logger = logging.getLogger("scanner")
@@ -47,7 +46,7 @@ class ProfileReader(PageReader):
             return False
 
     def _get_name(self, browser) -> str:
-        elem = browserhelper.safe_find_element_by_css(browser, self.settings.selector_for_get_name)
+        elem = self.browserhelper.safe_find_element_by_css(self.settings.selector_for_get_name)
         if elem is None:
             logger.warning('Name not found.')
             return elem
@@ -56,7 +55,7 @@ class ProfileReader(PageReader):
 
 
     def _get_location(self, browser) -> str:
-        elem = browserhelper.safe_find_element_by_css(browser, self.settings.selector_for_get_location)
+        elem = self.browserhelper.safe_find_element_by_css(self.settings.selector_for_get_location)
         if elem is None:
             logger.warning('Location not found.')
             return elem
@@ -64,7 +63,7 @@ class ProfileReader(PageReader):
             return elem.text
 
     def _get_connections(self, browser) -> int:
-        elem = browserhelper.safe_find_element_by_css(browser, self.settings.selector_for_get_connections)
+        elem = self.browserhelper.safe_find_element_by_css(self.settings.selector_for_get_connections)
         if elem is None:
             logger.warning('Connections not found.')
             return elem
