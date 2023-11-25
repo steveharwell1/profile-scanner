@@ -13,15 +13,15 @@ class Crawler:
         self.pageReader = pageReader
 
     def scanprofiles(self):
-        for id in self.storage.get_profiles_to_update():
+        for profile in self.storage.get_profiles_to_update():
             time.sleep(self.settings.sleep_between_profiles)
-            logger.info (f"{id} scan started")
-            result = self.pageReader.scan(self.browser, id=id)
+            logger.info (f"{profile.id} scan started")
+            result = self.pageReader.scan(self.browser, prev_profile=profile)
             if result.status == PageScanResultStatus.OK:
-                logger.info(f'{id} scan was ok')
+                logger.info(f'{profile.id} scan was ok')
                 self.process_ok_result(result)
             else:
-                logger.warning(f'{id} scan was not ok')
+                logger.warning(f'{profile.id} scan was not ok')
 
     def single_scan(self, reader, **kwargs):
         result = reader.scan(self.browser, **kwargs)

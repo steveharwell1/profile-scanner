@@ -7,6 +7,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
+
 import logging
 logger = logging.getLogger("scanner")
 
@@ -14,6 +15,12 @@ class BrowserHelper:
     def __init__(self, driver):
         self.get_count = 0
         self.driver = driver
+        
+    def safe_find_element_by_css(self, selector):
+        return self.safe_find_element(By.CSS_SELECTOR, selector)
+
+    def safe_find_element_by_id(self, id):
+        return self.safe_find_element(By.ID, id)
 
     def safe_find_element(self, by, selector):
         try:
@@ -21,20 +28,18 @@ class BrowserHelper:
             return elem
         except NoSuchElementException:
             return None
-        
-    def safe_find_element_by_css(self, selector):
-        return self.safe_find_element(By.CSS_SELECTOR, selector)
 
-    def safe_find_element_by_id(self, id):
-        return self.safe_find_element(By.ID, id)
-        
     def get(self, url) -> None:
+        trying_login = url == settings.login_url
         if self.get_count >= settings.max_page_views:
             logger.info("Hit the limit for page views today.")
             sys.exit(0)
         self.driver.get(url)
         self.get_count = self.get_count + 1
         time.sleep(settings.buffer_seconds_after_page_get)
+        if not trying_login and (self.driver.current_url == settings.login_url or self.driver.current_url == settings.linkedin_homepage):
+            logger.warning('We got logged out. Please restart program.')
+            sys.exit(1)
 
     def wait_for(self, url, css_selector):
         try:

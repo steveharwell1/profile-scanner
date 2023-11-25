@@ -37,27 +37,27 @@ select_most_recent_profile_by_id = """
         """
 
 select_alumni_profiles_not_recently_updated = """
-        select p.LinkedInId, MAX(o.observationdate) as odate
+        select p.*
         from Profile as p
         inner join Observation as o
         on p.ProfileKey = o.ProfileKey
         GROUP BY p.LinkedInId
-        HAVING MAX(p.isalum) = 1 AND odate < DATE('now', '-' || ? || ' month')
-        ORDER BY odate
+        HAVING MAX(p.isalum) = 1 AND MAX(o.observationdate) < DATE('now', '-' || ? || ' month')
+        ORDER BY MAX(o.observationdate)
         """
 
 select_non_alumni_profiles_not_recently_updated = """
-        select p.LinkedInId, MAX(o.observationdate) as odate
+        select p.*
         from Profile as p
         inner join Observation as o
         on p.ProfileKey = o.ProfileKey
         GROUP BY p.LinkedInId
-        HAVING MAX(p.isalum) = 0 AND odate < DATE('now', '-' || ? || ' month')
-        ORDER BY odate
+        HAVING MAX(p.isalum) = 0 AND MAX(o.observationdate) < DATE('now', '-' || ? || ' month')
+        ORDER BY MAX(o.observationdate)
         """
 
 select_blank_profiles = """
-        SELECT p.LinkedInId, MAX(o.observationkey)
+        SELECT p.*
         FROM Profile AS p
         LEFT JOIN Observation AS o
         ON p.ProfileKey = o.ProfileKey
