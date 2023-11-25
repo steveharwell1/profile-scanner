@@ -1,4 +1,5 @@
 # Imports like sql.py and types.py
+import pandas as pd
 import time
 
 from crawlertypes import Profile
@@ -105,16 +106,46 @@ class Storage:
                 logger.warning("""python scanner -s tamuc""")
                 time.sleep(2)
 
-    def to_csv(self, id=None, filename="") -> None:
+    def to_csv(self, id=None, filename="output.csv") -> None:
         """
-            If id, output that person's timeline.
-            If no id, export the most recent record for all profiles
+        If id, output that person's timeline.
+        If no id, export the most recent record for all profiles
         """
-        pass
+        cursor = self.conn.cursor()
 
-    def to_xlsx(self, id=None, filename=""):
+        if id:
+            # Export timeline for a specific profile
+            query = cursor.execute(sql.select_profile_timeline, (id,))
+            results = query.fetchall()
+
+            df = pd.DataFrame(results, columns=["ProfileKey", "Action", "Timestamp"])
+            df.to_csv(filename, index=False)
+        else:
+            # Export most recent record for all profiles
+            query = cursor.execute(sql.select_all_profiles)
+            results = query.fetchall()
+
+            df = pd.DataFrame(results, columns=["ProfileKey", "FirstName", "LastName", "Email", "OtherFields", "Timestamp"])
+            df.to_csv(filename, index=False)
+
+    def to_xlsx(self, id=None, filename="output.xlsx"):
         """
-            If id, output that person's timeline.
-            If no id, export the most recent record for all profiles
+        If id, output that person's timeline.
+        If no id, export the most recent record for all profiles
         """
-        pass
+        cursor = self.conn.cursor()
+
+        if id:
+            # Export timeline for a specific profile
+            query = cursor.execute(sql.select_profile_timeline, (id,))
+            results = query.fetchall()
+
+            df = pd.DataFrame(results, columns=["ProfileKey", "Action", "Timestamp"])
+            df.to_excel(filename, index=False, sheet_name="ProfileTimeline")
+        else:
+            # Export most recent record for all profiles
+            query = cursor.execute(sql.select_all_profiles)
+            results = query.fetchall()
+
+            df = pd.DataFrame(results, columns=["ProfileKey", "FirstName", "LastName", "Email", "OtherFields", "Timestamp"])
+            df.to_excel(filename, index=False, sheet_name="AllProfiles")
