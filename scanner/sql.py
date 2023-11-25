@@ -82,3 +82,15 @@ insert_stub_profile_by_id = """
         values(date('now'), ?)
         """
 
+select_profile_timeline = """
+        SELECT *
+        FROM profile
+        WHERE linkedinid = ?
+        ORDER BY profilekey DESC, startdate DESC
+        """
+
+select_all_alumni = """
+        SELECT *
+        FROM profile
+        WHERE isalum = TRUE AND enddate IS NULL
+        """

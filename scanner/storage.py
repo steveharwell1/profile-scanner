@@ -111,41 +111,34 @@ class Storage:
         If id, output that person's timeline.
         If no id, export the most recent record for all profiles
         """
-        cursor = self.conn.cursor()
-
         if id:
-            # Export timeline for a specific profile
-            query = cursor.execute(sql.select_profile_timeline, (id,))
-            results = query.fetchall()
-
-            df = pd.DataFrame(results, columns=["ProfileKey", "Action", "Timestamp"])
-            df.to_csv(filename, index=False)
+            self.output_persons_timeline(id, lambda x: x.to_csv(filename, index=False))
         else:
-            # Export most recent record for all profiles
-            query = cursor.execute(sql.select_all_profiles)
-            results = query.fetchall()
-
-            df = pd.DataFrame(results, columns=["ProfileKey", "FirstName", "LastName", "Email", "OtherFields", "Timestamp"])
-            df.to_csv(filename, index=False)
+            self.output_all_alumni_snapshot(lambda x: x.to_csv(filename, index=False))
 
     def to_xlsx(self, id=None, filename="output.xlsx"):
         """
         If id, output that person's timeline.
         If no id, export the most recent record for all profiles
         """
-        cursor = self.conn.cursor()
-
         if id:
-            # Export timeline for a specific profile
-            query = cursor.execute(sql.select_profile_timeline, (id,))
-            results = query.fetchall()
-
-            df = pd.DataFrame(results, columns=["ProfileKey", "Action", "Timestamp"])
-            df.to_excel(filename, index=False, sheet_name="ProfileTimeline")
+            self.output_persons_timeline(id, lambda x: x.to_excel(filename, index=False, sheet_name="Profile Timeline"))
         else:
-            # Export most recent record for all profiles
-            query = cursor.execute(sql.select_all_profiles)
-            results = query.fetchall()
+            self.output_all_alumni_snapshot(lambda x: x.to_excel(filename, index=False, sheet_name="Alumni"))
 
-            df = pd.DataFrame(results, columns=["ProfileKey", "FirstName", "LastName", "Email", "OtherFields", "Timestamp"])
-            df.to_excel(filename, index=False, sheet_name="AllProfiles")
+
+    def output_persons_timeline(self, id, saving_strategy):
+        cursor = self.conn.cursor()
+        query = cursor.execute(sql.select_profile_timeline, (id,))
+        results = query.fetchall()
+        #columns=["ProfileKey", "Action", "Timestamp"]
+        df = pd.DataFrame(results, columns=[description[0] for description in cursor.description])
+        saving_strategy(df)
+
+    def output_all_alumni_snapshot(self, saving_strategy):
+        cursor = self.conn.cursor()
+        query = cursor.execute(sql.select_all_alumni)
+        results = query.fetchall()
+        #columns=["ProfileKey", "FirstName", "LastName", "Email", "OtherFields", "Timestamp"]
+        df = pd.DataFrame(results, columns=[description[0] for description in cursor.description])
+        saving_strategy(df)
