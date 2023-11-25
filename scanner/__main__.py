@@ -1,11 +1,12 @@
 import sqlite3
 
+from browserhelper import BrowserHelper
 from crawler import Crawler
 from loginreader import LoginReader
 from profilereader import ProfileReader
 from searchreader import SearchReader
 from storage import Storage
-import secrets
+import usersecrets as secrets
 import settings
 
 from selenium import webdriver
@@ -59,12 +60,13 @@ def do_scrape(scantype="automatic", **kwargs):
     try:
         logger.info('Starting browser (Chrome) and database ({settings.db.name})')
         browser = webdriver.Chrome()
+        browserhelper = BrowserHelper(browser)
         conn = sqlite3.connect(settings.db_name)
         store = Storage(conn, settings)
-        crawler = Crawler(settings, browser, store, ProfileReader(settings))
-        crawler.single_scan(LoginReader(settings), username=secrets.username, password=secrets.password)
+        crawler = Crawler(settings, browser, store, ProfileReader(settings, browserhelper))
+        crawler.single_scan(LoginReader(settings, browserhelper), username=secrets.username, password=secrets.password)
         if scantype == "search":
-            crawler.single_scan(SearchReader(settings), **kwargs)
+            crawler.single_scan(SearchReader(settings, browserhelper), **kwargs)
         crawler.scanprofiles()
         complete = True
     finally:

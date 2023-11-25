@@ -2,8 +2,9 @@
 
 db_name = "profiles.db"
 log_level = "INFO"
-months_to_revisit_alumni = 1
-months_to_revisit_non_alumni = 3
+max_page_views = 30
+months_to_revisit_alumni = 3
+months_to_revisit_non_alumni = 6
 batch_size_for_reviewing_non_alumni = 20
 batch_size_for_reviewing_new_profiles = 20
 
