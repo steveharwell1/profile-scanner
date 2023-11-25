@@ -11,8 +11,8 @@ class ProfileReader(PageReader):
         prev_profile = kwargs['prev_profile']
         logger.info(f'{prev_profile.id} Navigating to profile page')
         ids = []
-        browserhelper.get(browser, prev_profile.id)
-        browserhelper.wait_for(browser, prev_profile.id, self.settings.wait_for_element_on_profile_page)
+        self.browserhelper.get(prev_profile.id)
+        self.browserhelper.wait_for(prev_profile.id, self.settings.wait_for_element_on_profile_page)
         name = self._get_name(browser)
         logger.info(f'{prev_profile.id} The user name is {name}')
         location = self._get_location(browser)
@@ -32,15 +32,15 @@ class ProfileReader(PageReader):
     def _is_alum(self, browser, prev_profile) -> bool:
         if prev_profile.is_alum:
             return True
-        tamuc_profile_link = browserhelper.safe_find_element_by_css(browser, self.settings.selector_for_education_area_on_profile)
-        extra_experience = browserhelper.safe_find_element_by_css(browser, self.settings.selector_for_has_extended_education)
+        tamuc_profile_link = self.browserhelper.safe_find_element_by_css(self.settings.selector_for_education_area_on_profile)
+        extra_experience = self.browserhelper.safe_find_element_by_css(self.settings.selector_for_has_extended_education)
         if tamuc_profile_link is not None:
             return True
         if extra_experience is not None:
             details_page = f"{prev_profile.id}{self.settings.education_details_path}"
-            browserhelper.get(browser, details_page)
-            browserhelper.wait_for(browser, details_page, self.settings.wait_for_element_on_education_page)
-            tamuc_link = browserhelper.safe_find_element_by_css(browser, self.settings.selector_for_is_alum)
+            self.browserhelper.get(details_page)
+            self.browserhelper.wait_for(details_page, self.settings.wait_for_element_on_education_page)
+            tamuc_link = self.browserhelper.safe_find_element_by_css(self.settings.selector_for_is_alum)
             return tamuc_link is not None
         else:
             return False
