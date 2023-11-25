@@ -81,7 +81,7 @@ class Storage:
             query = cursor.execute(sql.select_alumni_profiles_not_recently_updated, (self.settings.months_to_revisit_alumni,))  
             result = query.fetchone()
             if result is not None:
-                yield result[0] 
+                yield Profile.from_record(result)
             else: break
 
     def _get_stale_non_alumni(self, cursor,  batch_size=20):
@@ -90,7 +90,7 @@ class Storage:
             query = cursor.execute(sql.select_non_alumni_profiles_not_recently_updated, (self.settings.months_to_revisit_non_alumni,))  
             result = query.fetchone()
             if result is not None:
-                yield result[0] 
+                yield Profile.from_record(result)
             else: break
 
     def _get_new_profiles(self, cursor, batch_size=20):
@@ -99,7 +99,7 @@ class Storage:
             query = cursor.execute(sql.select_blank_profiles)
             result = query.fetchone()
             if result is not None:
-                yield result[0] 
+                yield Profile.from_record(result)
             else:
                 logger.warning("""Blank profiles exhausted. Try restarting the scanner(ctrl+c or ctrl+z) with a search term to kick things off.""")
                 logger.warning("""python scanner -s tamuc""")

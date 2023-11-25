@@ -1,4 +1,5 @@
 import time
+import sys
 
 import settings
 
@@ -6,6 +7,7 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
+
 
 import logging
 logger = logging.getLogger("scanner")
@@ -24,8 +26,12 @@ def safe_find_element_by_id(driver, id):
     return safe_find_element(driver, By.ID, id)
     
 def get(driver, url) -> None:
+    trying_login = url == settings.login_url
     driver.get(url)
     time.sleep(settings.buffer_seconds_after_page_get)
+    if not trying_login and (driver.current_url == settings.login_url or driver.current_url == settings.linkedin_homepage):
+        logger.warning('We got logged out. Please restart program.')
+        sys.exit(1)
 
 def wait_for(driver, url, css_selector):
     try:
