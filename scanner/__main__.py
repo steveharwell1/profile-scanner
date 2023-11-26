@@ -56,7 +56,6 @@ def main() -> None:
 def do_scrape(scantype="automatic", **kwargs):
     browser = None
     conn = None
-    complete = False
     try:
         logger.info('Starting browser (Chrome) and database ({settings.db.name})')
         browser = webdriver.Chrome()
@@ -68,10 +67,7 @@ def do_scrape(scantype="automatic", **kwargs):
         if scantype == "search":
             crawler.single_scan(SearchReader(settings, browserhelper), **kwargs)
         crawler.scanprofiles()
-        complete = True
     finally:
-        if not complete:
-            logger.warning("Finished without completing.")
         if browser is not None:
             browser.close()
         if conn is not None:
