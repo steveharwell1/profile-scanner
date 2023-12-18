@@ -5,6 +5,8 @@
 - [Get current profiles](#get-current-profiles)
 - [Change output file](#change-output-file)
 
+# NOTICE! All captchas will need to be solved by the operator with a mouse and keyboard.
+
 ## Prerequisite setup
 There are a few things that need to be done before running the scraper.
 1. Ensure that your connection is protected by a VPN
